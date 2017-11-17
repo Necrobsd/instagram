@@ -1,0 +1,11 @@
+decorator==4.0.11
+imageio==2.1.2
+-e git+https://github.com/LevPasha/Instagram-API-python.git@a5a2bff6755ffa8e92b91a91ee3e5d0719a631e0#egg=instagram_api
+moviepy==0.2.3.2
+numpy==1.13.3
+olefile==0.44
+peewee==2.10.2
+Pillow==4.3.0
+requests==2.11.1
+requests-toolbelt==0.7.0
+tqdm==4.11.2
