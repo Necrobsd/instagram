@@ -1,6 +1,9 @@
 from InstagramAPI import InstagramAPI
 import time
 import json
+from models import User
+import peewee
+from datetime import datetime
 
 
 def read_db():
@@ -14,10 +17,6 @@ def main():
         user, passwd = account['user'], account['passwd']
     api = InstagramAPI(user, passwd)
     api.login()
-    old_users_ids = set(read_db())
-    print(f'Ранее было отправлено заявок на подписку: {len(old_users_ids)}')
-    current_followings_ids = {user['pk'] for user in api.getTotalSelfFollowings()}
-    print(f'На текущий момент Вы подписаны на {len(current_followings_ids)} человек')
     while True:
         user_for_scan = input('Введи название паблика: ')
         try:
@@ -29,20 +28,24 @@ def main():
             continue
 
     followers = api.getTotalFollowers(user_id_for_scan)
-    users_ids_for_following = []
+    users_for_following= []
     for follower in followers:
-        if follower['pk'] not in old_users_ids:
-            users_ids_for_following.append(follower['pk'])
-            if len(users_ids_for_following) >= 100:
-                for user_id_for_scan in users_ids_for_following:
-                    api.follow(user_id_for_scan)
-                    old_users_ids.add(user_id_for_scan)
+        try:
+            User.get(User.uid == follower['pk'])
+        except peewee.DoesNotExist:
+            users_for_following.append(follower)
+            if len(users_for_following) >= 100:
+                for user in users_for_following:
+                    api.follow(user['pk'])
+                    User.create(uid=user['pk'],
+                                username=user['username'],
+                                full_name=user['full_name'],
+                                following_date=datetime.now(),
+                                status=1)
                 break
-    with open('UsersDB.json', 'w', encoding='utf8') as f:
-        f.write(json.dumps(list(old_users_ids)))
-    print(f'Отправлено новых заявок на подписку: {len(users_ids_for_following)}')
+
+    print(f'Отправлено новых заявок на подписку: {len(users_for_following)}')
     time.sleep(5)
-    print('Готово!!!')
 
 if __name__ == '__main__':
     main()
