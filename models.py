@@ -21,6 +21,7 @@ class User(BaseModel):
     following_date = DateTimeField(default=datetime.datetime.now, verbose_name='Дата подписки')
     unfollowing_date = DateTimeField(null=True, verbose_name='Дата отписки')
     status = BooleanField(index=True, default=1, verbose_name='Статус подписки')
+    mutual = BooleanField(index=True, default=0, verbose_name='Взаимная подписка')
 
 
 db.connect()
