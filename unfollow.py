@@ -17,7 +17,7 @@ my_followings = User.select()\
 if my_followings:
     for count, user in enumerate(my_followings, start=1):
         api.unfollow(user.uid)
-        print(f'{count}   Отписываемся от {user.username}')
+        print(f'{count:3}   Отписываемся от {user.username}')
         user.unfollowing_date = datetime.now()
         user.status = 0
         if user.uid in my_followers_ids:

@@ -29,7 +29,7 @@ for follower in followers:
             break
 for count, user in enumerate(users_for_following, start=1):
     api.follow(user['pk'])
-    print(f'{count}    Подписываемся на {user["username"]}')
+    print(f'{count:3}    Подписываемся на {user["username"]}')
     User.create(uid=user['pk'],
                 username=user['username'],
                 full_name=user['full_name'],

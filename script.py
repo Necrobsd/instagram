@@ -1,13 +1,14 @@
 from models import User
 from instagramApi import api
-import peewee
+import peewee, time
 
 from datetime import datetime, timedelta
 
-users = User.select().where(User.uid == 1).limit(5)
+users = User.select().limit(150)
 print(len(users))
-
-
+for count, user in enumerate(users):
+    print(f'{count:3} Пользователь {user.username} в базе!')
+time.sleep(5)
 #
 # api.login()
 # my_followers = api.getTotalSelfFollowers()
