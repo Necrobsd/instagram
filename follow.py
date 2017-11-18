@@ -9,16 +9,17 @@ COUNT_REQUESTS = 100
 users_for_following = []
 api.login()
 while True:
-    target_account = input('Введи название паблика: ')
+    target_account = input('Введите название аккаунта в Инстаграме: ')
     try:
         api.searchUsername(target_account)
         target_account_id = api.LastJson['user']['pk']
         break
     except:
-        print('Паблик не найден. Попробуй еще раз.')
+        print('Аккаунт не найден. Попробуйте еще раз.')
         continue
-
+print(f'Получаем подписчиков аккаунта {target_account}')
 followers = api.getTotalFollowers(target_account_id)
+print(f'Получено {len(followers)} подписчиков аккаунта {target_account}')
 for follower in followers:
     try:
         User.get(User.uid == follower['pk'])
@@ -26,9 +27,9 @@ for follower in followers:
         users_for_following.append(follower)
         if len(users_for_following) >= COUNT_REQUESTS:
             break
-for user in users_for_following:
+for count, user in enumerate(users_for_following, start=1):
     api.follow(user['pk'])
-    print(f'Подписываемся на {user["username"]}')
+    print(f'{count}    Подписываемся на {user["username"]}')
     User.create(uid=user['pk'],
                 username=user['username'],
                 full_name=user['full_name'],
