@@ -4,11 +4,9 @@ import peewee
 
 from datetime import datetime, timedelta
 
-users = User.select().where(User.mutual.is_null())
+users = User.select().where(User.uid == 1).limit(5)
 print(len(users))
-for user in users:
-    user.mutual = 0
-    user.save()
+
 
 #
 # api.login()

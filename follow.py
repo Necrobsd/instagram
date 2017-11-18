@@ -5,7 +5,7 @@ import peewee
 from datetime import datetime
 
 
-COUNT_REQUESTS = 100
+REQUESTS_NUMBER = 100
 users_for_following = []
 api.login()
 while True:
@@ -25,7 +25,7 @@ for follower in followers:
         User.get(User.uid == follower['pk'])
     except peewee.DoesNotExist:
         users_for_following.append(follower)
-        if len(users_for_following) >= COUNT_REQUESTS:
+        if len(users_for_following) >= REQUESTS_NUMBER:
             break
 for count, user in enumerate(users_for_following, start=1):
     api.follow(user['pk'])
