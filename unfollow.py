@@ -1,12 +1,20 @@
-from InstagramAPI import InstagramAPI
-import json
+from instagramApi import api
+from models import User
+from datetime import datetime, timedelta
+import time
 
-with open('account.json', 'r') as f:
-    account = json.loads(f.read())
-    user, passwd = account['user'], account['passwd']
-api = InstagramAPI(user, passwd)
+
+FIVE_DAYS_AGO = datetime.now() - timedelta(days=5)
+COUNT_REQUESTS = 100
 api.login()
-my_followings = api.getTotalSelfFollowings()
-for user in my_followings['users'][:100]:
-    api.unfollow(user['pk'])
-print('Готово!!!')
+my_followings = User.select()\
+    .where(User.following_date <= FIVE_DAYS_AGO)\
+    .where(User.status == 1).order_by(User.id)
+for user in my_followings[:COUNT_REQUESTS]:
+    api.unfollow(user.uid)
+    print(f'Отписываемся от {user.uid}')
+    user.unfollowing_date = datetime.now()
+    user.status = 0
+    user.save()
+print(f'Завершена отписка от {COUNT_REQUESTS} человек')
+time.sleep(5)
