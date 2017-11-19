@@ -1,29 +1,36 @@
-from instagramApi import api
+from settings import api, log, NUMBER_OF_DAYS_BEFORE_UNFOLLOW, REQUESTS_NUMBER
 from models import User
 from datetime import datetime, timedelta
 import time
 
 
-NUMBER_OF_DAYS_BEFORE_UNFOLLOW = 5
-FIVE_DAYS_AGO = datetime.now() - timedelta(days=NUMBER_OF_DAYS_BEFORE_UNFOLLOW)
-REQUESTS_NUMBER = 100
+UNFOLLOWING_DATE = datetime.now() - timedelta(days=NUMBER_OF_DAYS_BEFORE_UNFOLLOW)
+
 api.login()
 my_followers_ids = [follower['pk'] for follower in api.getTotalSelfFollowers()]
 
 my_followings = User.select()\
-    .where(User.following_date <= FIVE_DAYS_AGO)\
+    .where(User.following_date <= UNFOLLOWING_DATE)\
     .where(User.status == 1)\
-    .order_by(User.id).limit(REQUESTS_NUMBER)
+    .limit(REQUESTS_NUMBER)
+log('Запуск процедуры отписки')
 if my_followings:
     for count, user in enumerate(my_followings, start=1):
         api.unfollow(user.uid)
-        print(f'{count:3}   Отписываемся от {user.username}')
-        user.unfollowing_date = datetime.now()
-        user.status = 0
-        if user.uid in my_followers_ids:
-            user.mutual = 1
-        user.save()
-    print(f'Завершена отписка от {REQUESTS_NUMBER} человек')
+        if api.LastJson['status'] == 'fail':
+            log(f'Ошибка при обращении к сервису Инстаграм: {api.LastJson["message"]}')
+            break
+        else:
+            print(f'{count:3}   Отписываемся от {user.username}')
+            user.unfollowing_date = datetime.now()
+            user.status = 0
+            if user.uid in my_followers_ids:
+                user.mutual = 1
+            user.save()
+    print()
+    print('=' * 80, '\n')
+    log(f'Завершена отписка от {count} человек')
 else:
-    print(f'Отсутствуют подписки старше {NUMBER_OF_DAYS_BEFORE_UNFOLLOW} дней')
-time.sleep(5)
+    print('=' * 80, '\n')
+    log(f'Отсутствуют подписки старше {NUMBER_OF_DAYS_BEFORE_UNFOLLOW} дней')
+time.sleep(15)
