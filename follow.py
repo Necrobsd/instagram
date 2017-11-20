@@ -1,5 +1,4 @@
 ﻿from settings import api, REQUESTS_NUMBER, log
-import time
 from models import User
 import peewee
 from datetime import datetime
@@ -44,4 +43,4 @@ else:
 print()
 print('=' * 80, '\n')
 log(f'Отправлено новых заявок на подписку: {count}')
-time.sleep(15)
+input('\nДля выхода нажмите Enter...')
