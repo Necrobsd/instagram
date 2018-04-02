@@ -2,22 +2,22 @@ from models import User
 from settings import api
 import peewee, time
 from InstagramAPI import InstagramAPI
+from account import passwd, user
 
 
-api = InstagramAPI('', '')
+api = InstagramAPI(user, passwd)
 api.login()
 TIMEOUT = 10  # Таймаут между обращениями к АПИ (секунд)
 likers_ids = set()  # id пользователей, которые поставили хотя бы один лайк
 commentators_ids = set()  # id пользователей, которые оставили хотя бы один коммент
 media_with_comments = set()
 media_with_likes = set()
-
 more_available = True
 maxid = None
 i = 1
 while more_available:
     print('итерация ', i)
-    api.getUserFeed(6091081871, maxid=maxid)
+    api.getUserFeed(3643584259, maxid=maxid)
     i += 1
     more_available = api.LastJson.get('more_available', False)
     if more_available:
@@ -53,6 +53,6 @@ for media_id in media_with_comments:
         if has_more_comments:
             max_id = api.LastJson.get('next_max_id', '')
             print('Спим 2 секунды')
-            time.sleep(2)
+            time.sleep(5)
     print('Спим 5 секунд')
     time.sleep(5)
