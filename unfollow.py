@@ -1,7 +1,6 @@
 from settings import api, log, NUMBER_OF_DAYS_BEFORE_UNFOLLOW, REQUESTS_NUMBER
 from models import User
 from datetime import datetime, timedelta
-import time
 
 
 UNFOLLOWING_DATE = datetime.now() - timedelta(days=NUMBER_OF_DAYS_BEFORE_UNFOLLOW)
@@ -33,4 +32,4 @@ if my_followings:
 else:
     print('=' * 80, '\n')
     log(f'Отсутствуют подписки старше {NUMBER_OF_DAYS_BEFORE_UNFOLLOW} дней')
-time.sleep(15)
+input('\nДля выхода нажмите Enter...')
