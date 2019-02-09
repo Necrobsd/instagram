@@ -1,13 +1,18 @@
-﻿from settings import api, REQUESTS_NUMBER, log
-from models import User
-import peewee
+﻿import time
 from datetime import datetime
 
+import peewee
 
+from models import User
+from settings import api, REQUESTS_NUMBER, log, follow_timeout
+
+COUNT = 0
 users_for_following = []
 api.login()
 while True:
-    target_account = input('Введите название аккаунта в Инстаграме: ')
+    target_account = input('Введите название аккаунта в Инстаграме [master_sporta19]: ')
+    if not target_account:
+        target_account = 'master_sporta19'
     try:
         api.searchUsername(target_account)
         target_account_id = api.LastJson['user']['pk']
@@ -38,9 +43,11 @@ if users_for_following:
                         username=user['username'],
                         full_name=user['full_name'],
                         following_date=datetime.now())
+            COUNT = count
+            time.sleep(follow_timeout())
 else:
     print('Отсутствуют пользователи, на которых можно подписаться')
 print()
 print('=' * 80, '\n')
-log(f'Отправлено новых заявок на подписку: {count}')
+log(f'Отправлено новых заявок на подписку: {COUNT}')
 input('\nДля выхода нажмите Enter...')

@@ -1,9 +1,11 @@
-from settings import api, log, NUMBER_OF_DAYS_BEFORE_UNFOLLOW, REQUESTS_NUMBER
-from models import User
+import time
 from datetime import datetime, timedelta
 
+from models import User
+from settings import api, log, NUMBER_OF_DAYS_BEFORE_UNFOLLOW, REQUESTS_NUMBER, unfollow_timeout
 
 UNFOLLOWING_DATE = datetime.now() - timedelta(days=NUMBER_OF_DAYS_BEFORE_UNFOLLOW)
+COUNT = 0
 
 api.login()
 my_followers_ids = [follower['pk'] for follower in api.getTotalSelfFollowers()]
@@ -26,9 +28,11 @@ if my_followings:
             if user.uid in my_followers_ids:
                 user.mutual = 1
             user.save()
+            COUNT = count
+            time.sleep(unfollow_timeout())
     print()
     print('=' * 80, '\n')
-    log(f'Завершена отписка от {count} человек')
+    log(f'Завершена отписка от {COUNT} человек')
 else:
     print('=' * 80, '\n')
     log(f'Отсутствуют подписки старше {NUMBER_OF_DAYS_BEFORE_UNFOLLOW} дней')
