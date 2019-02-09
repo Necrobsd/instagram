@@ -2,7 +2,7 @@ import time
 from datetime import datetime, timedelta
 
 from models import User
-from settings import api, log, NUMBER_OF_DAYS_BEFORE_UNFOLLOW, REQUESTS_NUMBER, unfollow_timeout
+from settings import api, log, NUMBER_OF_DAYS_BEFORE_UNFOLLOW, REQUESTS_NUMBER, Timeout
 
 UNFOLLOWING_DATE = datetime.now() - timedelta(days=NUMBER_OF_DAYS_BEFORE_UNFOLLOW)
 COUNT = 0
@@ -16,6 +16,7 @@ my_followings = User.select()\
     .limit(REQUESTS_NUMBER)
 log('Запуск процедуры отписки')
 if my_followings:
+    timeout = Timeout()
     for count, user in enumerate(my_followings, start=1):
         api.unfollow(user.uid)
         if api.LastJson['status'] == 'fail':
@@ -29,7 +30,7 @@ if my_followings:
                 user.mutual = 1
             user.save()
             COUNT = count
-            time.sleep(unfollow_timeout())
+            time.sleep(timeout.unfollow)
     print()
     print('=' * 80, '\n')
     log(f'Завершена отписка от {COUNT} человек')

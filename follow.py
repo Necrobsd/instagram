@@ -4,7 +4,7 @@ from datetime import datetime
 import peewee
 
 from models import User
-from settings import api, REQUESTS_NUMBER, log, follow_timeout
+from settings import api, REQUESTS_NUMBER, log, Timeout
 
 COUNT = 0
 users_for_following = []
@@ -24,6 +24,7 @@ print(f'Получаем подписчиков аккаунта {target_account
 followers = api.getTotalFollowers(target_account_id)
 log(f'Получено {len(followers)} подписчиков аккаунта {target_account}')
 log('Запуск процедуры подписки')
+timeout = Timeout()
 for follower in followers:
     try:
         User.get(User.uid == follower['pk'])
@@ -44,7 +45,7 @@ if users_for_following:
                         full_name=user['full_name'],
                         following_date=datetime.now())
             COUNT = count
-            time.sleep(follow_timeout())
+            time.sleep(timeout.follow)
 else:
     print('Отсутствуют пользователи, на которых можно подписаться')
 print()

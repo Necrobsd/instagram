@@ -13,16 +13,19 @@ NUMBER_OF_DAYS_BEFORE_UNFOLLOW = 5  # Количество дней до нач�
 REQUESTS_NUMBER = 100  # Количество обращений к АПИ Инстаграм за один запуск
 
 
-def follow_timeout():  # Таймаут для подписки
-    base_time = 30
-    random_time = random.randint(0, 15)
-    return base_time + random_time
+class Timeout:
+    base_follow_timeout = 30
+    base_unfollow_timeout = 12
 
+    @property
+    def follow(self):  # Таймаут для подписки
+        random_time = random.randint(0, 15)
+        return self.base_follow_timeout + random_time
 
-def unfollow_timeout():  # Таймаут для отписки
-    base_time = 12
-    random_time = random.randint(0, 15)
-    return base_time + random_time
+    @property
+    def unfollow(self):  # Таймаут для отписки
+        random_time = random.randint(0, 15)
+        return self.base_unfollow_timeout + random_time
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
